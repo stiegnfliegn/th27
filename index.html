@@ -2,7 +2,8 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Secret Mission</title>
+<title>Der versteckte Schatz</title>
+
 <style>
 body{
 font-family: Arial;
@@ -19,19 +20,41 @@ max-width:500px;
 margin:auto;
 }
 </style>
+
 </head>
 
 <body>
 
 <div class="box">
 
-<h1>Mission gestartet</h1>
+<h1>Willkommen. Hier startet dein Abenteuer!</h1>
 
 <p>Wenn du das siehst funktioniert die Website 🙂</p>
 
 <p>Station 1 wartet auf dich.</p>
 
 </div>
+
+<audio id="bgmusic" autoplay loop>
+  <source src="00 Intro_compressed.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+
+const music = document.getElementById("bgmusic")
+music.volume = 0.4
+
+// Versuch Autoplay beim Laden
+window.addEventListener("load", () => {
+    music.play().catch(() => {})
+})
+
+// Fallback: startet beim ersten Tap
+document.addEventListener("click", () => {
+    music.play()
+}, { once: true })
+
+</script>
 
 </body>
 </html>
