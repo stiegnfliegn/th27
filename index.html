@@ -289,10 +289,6 @@
   <div class="tap-hint">🐸 Tippe auf die Tür …</div>
 </div>
 
-<audio id="intro-music">
-  <source src="Audio_Intro_Kroticole_Song.mp3" type="audio/mpeg">
-</audio>
-
 <script>
   const leafEmojis = ['🍃', '🌿', '🍀', '🍃', '🌿'];
   for (let i = 0; i < 18; i++) {
@@ -316,17 +312,12 @@
     if (opened) return;
     opened = true;
 
-    // Start music
-    const music = document.getElementById('intro-music');
-    music.volume = 0.5;
-    music.play().catch(() => {});
-
     // Open door animation
     document.getElementById('scene').classList.add('open');
 
     // Redirect after animation
     setTimeout(() => {
-      window.location.href = 'index2.html';
+     window.location.href = 'index2.html?play=1';
     }, 1400);
   }
 </script>
