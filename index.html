@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐸 Kröticoles Höhle</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #1a3a0a;
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  /* Subtle dark green texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(59,109,17,.4) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(30,70,10,.5) 0%, transparent 50%),
+      radial-gradient(circle at 50% 10%, rgba(20,50,5,.3) 0%, transparent 40%);
+    pointer-events: none;
+  }
+
+  /* ── BLÄTTERREGEN ── */
+  .leaf {
+    position: fixed;
+    top: -60px;
+    pointer-events: none;
+    z-index: 0;
+    animation: leafFall linear infinite;
+    opacity: 0;
+  }
+  @keyframes leafFall {
+    0%   { transform: translateY(0) rotate(0deg) translateX(0px);   opacity: 0; }
+    5%   { opacity: .18; }
+    90%  { opacity: .12; }
+    100% { transform: translateY(110vh) rotate(360deg) translateX(30px); opacity: 0; }
+  }
+
+  /* ── SCENE ── */
+  .scene {
+    position: relative;
+    z-index: 1;
+    width: min(88vw, 360px);
+    height: min(88svh, 560px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Ground */
+  .ground {
+    position: absolute;
+    bottom: 0; left: -10%; right: -10%;
+    height: 36px;
+    background: #3d2a0a;
+    border-radius: 0 0 16px 16px;
+    z-index: 10;
+  }
+  .moss-base {
+    position: absolute;
+    bottom: 32px; left: -8%; right: -8%;
+    height: 18px;
+    background: #2d5a0a;
+    border-radius: 50% 50% 0 0 / 80% 80% 0 0;
+    z-index: 11;
+  }
+  .moss-bump {
+    position: absolute;
+    bottom: 32px;
+    height: 22px;
+    background: #3B6D11;
+    border-radius: 50% 50% 0 0;
+    z-index: 12;
+  }
+
+  /* Mushrooms */
+  .shroom { position: absolute; bottom: 34px; z-index: 13; }
+  .shroom-cap  { background: #b03020; border-radius: 50% 50% 0 0; }
+  .shroom-stem { background: #f0ead8; margin: 0 auto; }
+
+  /* Door frame */
+  .frame {
+    position: absolute;
+    bottom: 36px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 68%;
+    height: 82%;
+    z-index: 5;
+  }
+  .frame-arch {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 34%;
+    background: #2e1a06;
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  }
+  .frame-body {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 70%;
+    background: #2e1a06;
+  }
+
+  /* Vines */
+  .vine {
+    position: absolute;
+    width: 7px;
+    background: #2a5008;
+    border-radius: 4px;
+    z-index: 6;
+  }
+  .vine-l { left: -4px; top: 15%; height: 65%; transform: rotate(-2deg); }
+  .vine-r { right: -4px; top: 22%; height: 58%; transform: rotate(2deg); }
+  .lv {
+    position: absolute;
+    width: 20px; height: 13px;
+    background: #3B6D11;
+    border-radius: 50% 50% 50% 0;
+    z-index: 7;
+  }
+
+  /* Door inside (dark) */
+  .door-inside {
+    position: absolute;
+    inset: 4px;
+    background: #0d0703;
+    border-radius: 46% 46% 0 0 / 28% 28% 0 0;
+    z-index: 1;
+  }
+
+  /* Door panels */
+  .door-left, .door-right {
+    position: absolute;
+    bottom: 4px; top: 4px;
+    width: calc(50% - 4px);
+    transition: transform 1.3s cubic-bezier(.4,0,.2,1);
+    z-index: 3;
+    overflow: hidden;
+  }
+  .door-left {
+    left: 4px;
+    background: #8B5E3C;
+    border-radius: 44% 0 0 0 / 26% 0 0 0;
+    transform-origin: left center;
+  }
+  .door-right {
+    right: 4px;
+    background: #7a5230;
+    border-radius: 0 44% 0 0 / 0 26% 0 0;
+    transform-origin: right center;
+  }
+
+  /* Wood grain */
+  .grain {
+    position: absolute;
+    left: 0; right: 0;
+    height: 2px;
+    background: rgba(0,0,0,.13);
+    border-radius: 1px;
+  }
+
+  /* Decorative panels on door */
+  .dp {
+    position: absolute;
+    border: 3px solid #5a3a1a;
+    border-radius: 3px;
+    left: 9px; right: 9px;
+  }
+  .dp-top    { top: 18px; height: 20%; }
+  .dp-bottom { bottom: 18px; height: 30%; }
+
+  /* Knobs */
+  .knob {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 13px; height: 13px;
+    background: #EF9F27;
+    border-radius: 50%;
+    border: 2px solid #633806;
+  }
+  .door-left  .knob { right: 7px; }
+  .door-right .knob { left: 7px; }
+
+  /* Open state */
+  .scene.open .door-left  { transform: perspective(500px) rotateY(-75deg); }
+  .scene.open .door-right { transform: perspective(500px) rotateY(75deg); }
+
+  /* Tap hint */
+  .tap-hint {
+    position: absolute;
+    bottom: -2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255,255,255,.45);
+    font-family: 'Nunito', sans-serif;
+    font-size: .9rem;
+    white-space: nowrap;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: .45; }
+    50%      { opacity: .9; }
+  }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="scene" id="scene" onclick="openDoor()">
+
+  <!-- Vines -->
+  <div class="frame">
+    <div class="frame-arch"></div>
+    <div class="frame-body"></div>
+
+    <div class="vine vine-l">
+      <div class="lv" style="top:5%;  left:5px;  transform:rotate(30deg)"></div>
+      <div class="lv" style="top:22%; left:-12px; transform:rotate(-20deg)"></div>
+      <div class="lv" style="top:40%; left:4px;  transform:rotate(35deg)"></div>
+      <div class="lv" style="top:58%; left:-10px; transform:rotate(-15deg)"></div>
+      <div class="lv" style="top:75%; left:4px;  transform:rotate(28deg)"></div>
+    </div>
+    <div class="vine vine-r">
+      <div class="lv" style="top:8%;  right:4px; left:auto; transform:rotate(-140deg)"></div>
+      <div class="lv" style="top:25%; right:-10px; left:auto; transform:rotate(160deg)"></div>
+      <div class="lv" style="top:44%; right:4px; left:auto; transform:rotate(-130deg)"></div>
+      <div class="lv" style="top:62%; right:-8px; left:auto; transform:rotate(150deg)"></div>
+    </div>
+
+    <div class="door-inside"></div>
+
+    <div class="door-left">
+      <div class="grain" style="top:14%"></div>
+      <div class="grain" style="top:27%"></div>
+      <div class="grain" style="top:41%"></div>
+      <div class="grain" style="top:55%"></div>
+      <div class="grain" style="top:69%"></div>
+      <div class="grain" style="top:82%"></div>
+      <div class="dp dp-top"></div>
+      <div class="dp dp-bottom"></div>
+      <div class="knob"></div>
+    </div>
+
+    <div class="door-right">
+      <div class="grain" style="top:14%"></div>
+      <div class="grain" style="top:27%"></div>
+      <div class="grain" style="top:41%"></div>
+      <div class="grain" style="top:55%"></div>
+      <div class="grain" style="top:69%"></div>
+      <div class="grain" style="top:82%"></div>
+      <div class="dp dp-top"></div>
+      <div class="dp dp-bottom"></div>
+      <div class="knob"></div>
+    </div>
+  </div>
+
+  <!-- Moss & ground -->
+  <div class="moss-base"></div>
+  <div class="moss-bump" style="left:5%;  width:18%"></div>
+  <div class="moss-bump" style="left:28%; width:12%; height:16px; background:#4a8a18"></div>
+  <div class="moss-bump" style="right:8%; width:20%; background:#2d5a0a"></div>
+  <div class="ground"></div>
+
+  <!-- Mushrooms -->
+  <div class="shroom" style="left:6%">
+    <div class="shroom-cap"  style="width:18px; height:12px"></div>
+    <div class="shroom-stem" style="width:7px; height:9px"></div>
+  </div>
+  <div class="shroom" style="left:14%; bottom:36px">
+    <div class="shroom-cap"  style="width:11px; height:7px"></div>
+    <div class="shroom-stem" style="width:4px; height:6px"></div>
+  </div>
+  <div class="shroom" style="right:8%">
+    <div class="shroom-cap"  style="width:16px; height:10px; background:#8B3a2b"></div>
+    <div class="shroom-stem" style="width:6px; height:8px"></div>
+  </div>
+
+  <div class="tap-hint">🐸 Tippe auf die Tür …</div>
+</div>
+
+<audio id="intro-music">
+  <source src="Audio_Intro_Kroticole_Song.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+  const leafEmojis = ['🍃', '🌿', '🍀', '🍃', '🌿'];
+  for (let i = 0; i < 18; i++) {
+    const leaf = document.createElement('div');
+    leaf.className = 'leaf';
+    leaf.textContent = leafEmojis[i % leafEmojis.length];
+    const left     = Math.random() * 100;
+    const duration = 6 + Math.random() * 10;
+    const delay    = -(Math.random() * duration);
+    const size     = 0.9 + Math.random() * 1.0;
+    leaf.style.left              = left + '%';
+    leaf.style.fontSize          = size + 'rem';
+    leaf.style.animationDuration = duration + 's';
+    leaf.style.animationDelay    = delay + 's';
+    document.body.appendChild(leaf);
+  }
+
+  let opened = false;
+
+  function openDoor() {
+    if (opened) return;
+    opened = true;
+
+    // Start music
+    const music = document.getElementById('intro-music');
+    music.volume = 0.5;
+    music.play().catch(() => {});
+
+    // Open door animation
+    document.getElementById('scene').classList.add('open');
+
+    // Redirect after animation
+    setTimeout(() => {
+      window.location.href = 'index.html';
+    }, 1400);
+  }
+</script>
+</body>
+</html>
