@@ -297,9 +297,10 @@
     <!-- Head -->
     <div class="k-head-wrap">
       <div class="k-head">
-         <img src="img/krot_test1.jpg" alt="Kröticole" style="display:block;">
-         <div class="k-head-ph" style="display:none;">Foto<br>hier</div>
-      </div>
+          <img src="img/krot_test1.jpg" alt="Kröticole"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="k-head-ph" style="display:none;">Foto<br>hier</div>
+        </div>
       <div class="k-shine"></div>
     </div>
     <div class="k-eye l"></div>
@@ -315,9 +316,10 @@
 
   <!-- Outro big face -->
   <div class="outro-face" id="outroFace">
-      <img src="img/krot_test1.jpg" alt="Kröticole" style="display:block;">
-      <div class="outro-face-ph">img/krot_test1.jpg</div>
-  </div>
+  <img src="img/krot_test2.jpg" alt="Kröticole"
+    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+  <div class="outro-face-ph" style="display:none;">img/krot_test2.jpg</div>
+</div>
   <!-- Outro crown on big face -->
   <svg id="outroCrown" style="position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:16;opacity:0;transition:opacity .8s;pointer-events:none;" width="90" height="40" viewBox="0 0 90 40">
     <path d="M5 38 L5 14 L24 29 L45 2 L66 29 L85 14 L85 38 Z" fill="#EF9F27" stroke="#633806" stroke-width="2"/>
