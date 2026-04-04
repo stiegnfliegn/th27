@@ -410,6 +410,9 @@
   // ── MUSIK ─────────────────────────────────────────
   const music = document.getElementById('bg-music');
   music.volume = 0.4;
+  if (new URLSearchParams(window.location.search).get('play') === '1') {
+  music.play().catch(() => {});
+  }
   music.play().catch(() => {
     const unlock = () => {
       music.play();
