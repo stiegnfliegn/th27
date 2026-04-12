@@ -351,6 +351,9 @@
 <audio id="bg-music" loop>
   <source src="audio_r_t01.mp3" type="audio/mpeg">
 </audio>
+<audio id="bg-music2" loop>
+  <source src="audio_bg01.mp3" type="audio/mpeg">
+</audio>
 
 <script src="https://unpkg.com/jsqr@1.4.0/dist/jsQR.js"></script>
 <script>
@@ -409,19 +412,30 @@
 
   // ── MUSIK ─────────────────────────────────────────
   const music = document.getElementById('bg-music');
+  const music2 = document.getElementById('bg-music2');
   music.volume = 0.4;
-  if (new URLSearchParams(window.location.search).get('play') === '1') {
-  music.play().catch(() => {});
+  music2.volume = 0.4;
+
+  music.addEventListener('ended', () => {
+    music2.loop = true;
+    music2.play().catch(() => {});
+  });
+
+  function startAudio() {
+    music.play().catch(() => {});
   }
-  music.play().catch(() => {
+
+  if (new URLSearchParams(window.location.search).get('play') === '1') {
+    startAudio();
+  } else {
     const unlock = () => {
-      music.play();
+      startAudio();
       document.removeEventListener('click', unlock);
       document.removeEventListener('touchstart', unlock);
     };
     document.addEventListener('click', unlock);
     document.addEventListener('touchstart', unlock);
-  });
+  }
 
   // ── QR SCANNER ────────────────────────────────────
   let videoStream = null;
