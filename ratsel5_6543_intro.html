@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔍 Vertraulich</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --dark-bg:    #0a0f0a;
+    --dark-card:  #111a11;
+    --green-dark: #3B6D11;
+    --green-mid:  #639922;
+    --green-neon: #7fff3a;
+    --orange:     #EF9F27;
+    --orange-dark:#633806;
+    --red:        #cc2222;
+    --cream:      #FFF8E7;
+    --white:      #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background-color: var(--dark-bg);
+    min-height: 100vh;
+    overflow-x: hidden;
+    color: var(--white);
+  }
+
+  /* Scanlines overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0,0,0,.13) 0px,
+      rgba(0,0,0,.13) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  /* Subtle green glow bg */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(99,153,34,.18) 0%, transparent 60%),
+      radial-gradient(ellipse at 50% 100%, rgba(99,153,34,.10) 0%, transparent 55%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Blinking static dots */
+  .static-dot {
+    position: fixed;
+    border-radius: 50%;
+    background: var(--green-neon);
+    pointer-events: none;
+    z-index: 1;
+    animation: staticBlink linear infinite;
+    opacity: 0;
+  }
+  @keyframes staticBlink {
+    0%,100%{opacity:0} 50%{opacity:.55}
+  }
+
+  .page {
+    position: relative;
+    z-index: 2;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem 1rem;
+    gap: 1.2rem;
+  }
+
+  /* ── TOP STAMP ── */
+  .stamp {
+    border: 3px solid var(--red);
+    border-radius: .5rem;
+    padding: .3rem 1.1rem;
+    font-family: 'Fredoka One', cursive;
+    font-size: .85rem;
+    letter-spacing: .18em;
+    color: var(--red);
+    text-transform: uppercase;
+    opacity: .9;
+    transform: rotate(-2deg);
+    box-shadow: 0 0 12px rgba(204,34,34,.35);
+    animation: stampPulse 2s ease-in-out infinite;
+  }
+  @keyframes stampPulse {
+    0%,100%{box-shadow:0 0 12px rgba(204,34,34,.35)}
+    50%{box-shadow:0 0 28px rgba(204,34,34,.7)}
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: rgba(17,26,17,0.92);
+    border: 2px solid var(--green-mid);
+    border-radius: 2rem;
+    padding: 1.4rem 1rem 1.2rem;
+    max-width: 440px;
+    width: 100%;
+    box-shadow: 0 0 32px rgba(99,153,34,.25), 6px 6px 0 var(--green-dark);
+    animation: popIn .6s cubic-bezier(.175,.885,.32,1.275);
+  }
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(.88) translateY(24px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  /* ── HEADER ── */
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    margin-bottom: 1rem;
+    padding-bottom: .8rem;
+    border-bottom: 1px solid rgba(99,153,34,.3);
+  }
+  .header-text {
+    display: flex;
+    align-items: center;
+  }
+  .frog-badge {
+    font-size: 2.4rem;
+    animation: frogBob .8s ease-in-out infinite alternate;
+    flex-shrink: 0;
+  }
+  .kroticole-img {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    border: 3px solid var(--green-mid);
+    box-shadow: 3px 3px 0 var(--green-dark);
+    background: var(--dark-card);
+    flex-shrink: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+  }
+  .kroticole-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  @keyframes frogBob {
+    from{transform:translateY(0)} to{transform:translateY(-5px)}
+  }
+  .header-text { text-align: left; }
+  .header-from {
+    font-size: .82rem;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--green-neon);
+    opacity: .85;
+    line-height: 1.4;
+  }
+  .header-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.15rem;
+    color: var(--white);
+    line-height: 1.2;
+  }
+
+  /* ── MESSAGE ── */
+  .message-box {
+    background: rgba(0,0,0,.4);
+    border: 1px solid rgba(99,153,34,.25);
+    border-radius: 1rem;
+    padding: .9rem 1rem;
+    font-size: .88rem;
+    font-weight: 700;
+    color: rgba(255,255,255,.85);
+    line-height: 1.65;
+    margin-bottom: 1rem;
+    position: relative;
+    min-height: 296px;
+    height: 296px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+  }
+  .message-box::before {
+    content: '▶';
+    position: absolute;
+    top: .75rem;
+    left: -.9rem;
+    color: var(--green-mid);
+    font-size: .7rem;
+  }
+  .msg-highlight {
+    color: var(--green-neon);
+    font-weight: 800;
+  }
+  .decrypt-btn {
+    width: 100%;
+    padding: .65rem 1rem;
+    border-radius: 1.5rem;
+    border: 2px solid var(--green-mid);
+    background: rgba(99,153,34,.15);
+    color: var(--green-neon);
+    font-family: 'Fredoka One', cursive;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    box-shadow: 0 0 12px rgba(99,153,34,.25);
+    transition: background .2s, box-shadow .2s;
+    letter-spacing: .04em;
+  }
+  .decrypt-btn:active { background: rgba(99,153,34,.3); }
+  .decrypt-btn:disabled { opacity: .4; cursor: default; }
+  .decrypt-text {
+    font-family: 'Nunito', monospace;
+    font-size: .88rem;
+    font-weight: 700;
+    color: rgba(255,255,255,.85);
+    line-height: 1.65;
+    white-space: pre-wrap;
+    letter-spacing: .02em;
+    width: 100%;
+  }
+
+  /* ── VIDEO ── */
+  .video-wrap {
+    position: relative;
+    width: 100%;
+    border-radius: 1.2rem;
+    overflow: hidden;
+    border: 2px solid var(--green-mid);
+    box-shadow: 0 0 20px rgba(99,153,34,.3);
+    background: #000;
+    margin-bottom: 1rem;
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: max-height .6s ease, opacity .5s ease, margin-bottom .6s ease;
+  }
+  .video-wrap.visible {
+    max-height: 500px;
+    opacity: 1;
+    pointer-events: auto;
+    margin-bottom: 1rem;
+  }
+  .video-embed {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+  }
+  .video-embed iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  /* Recording indicator */
+  .rec-dot {
+    position: absolute;
+    top: .6rem;
+    left: .8rem;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    background: rgba(0,0,0,.6);
+    border-radius: 2rem;
+    padding: .2rem .6rem;
+    font-size: .68rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    color: var(--white);
+    z-index: 3;
+  }
+  .rec-circle {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--red);
+    animation: recBlink .9s ease-in-out infinite alternate;
+  }
+  @keyframes recBlink { from{opacity:1} to{opacity:.2} }
+
+  /* ── BOTTOM HINT ── */
+  .bottom-hint {
+    font-size: .82rem;
+    font-weight: 700;
+    color: rgba(255,255,255,.45);
+    text-align: center;
+    letter-spacing: .04em;
+  }
+  .bottom-hint span {
+    color: var(--orange);
+  }
+
+  /* ── BACK BTN (hidden until video ends) ── */
+  .back-btn {
+    display: none;
+    width: 100%;
+    padding: .85rem 1.8rem;
+    border-radius: 2rem;
+    border: 3px solid var(--orange-dark);
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.15rem;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 var(--orange-dark);
+    transition: transform .12s, box-shadow .12s;
+    background: var(--orange);
+    color: var(--white);
+    text-decoration: none;
+    text-align: center;
+    animation: btnPop .5s cubic-bezier(.175,.885,.32,1.275);
+    margin-top: .4rem;
+  }
+  .back-btn.visible { display: block; }
+  .back-btn:active {
+    transform: translate(3px,3px);
+    box-shadow: 1px 1px 0 var(--orange-dark);
+  }
+  @keyframes btnPop {
+    from{opacity:0;transform:scale(.8) translateY(10px)}
+    to{opacity:1;transform:scale(1) translateY(0)}
+  }
+</style>
+</head>
+<body>
+
+<!-- static noise dots -->
+
+<div class="page">
+
+  <div class="stamp">⚠️ Streng geheim — nur für Romi</div>
+
+  <div class="card">
+
+    <div class="card-header">
+      <div class="kroticole-img">
+        <img src="quak.jpg" alt="Froschinspektor Quak" onerror="this.style.display='none'; this.parentElement.textContent='🕵️'">
+      </div>
+      <div class="header-text">
+        <div class="header-from">🔐 Verschlüsselte Nachricht von <span id="quak-name">Froschinspektor Quak</span></div>
+      </div>
+    </div>
+
+    <div class="message-box" id="message-box">
+      <span class="decrypt-text" id="decrypt-text"></span>
+    </div>
+    <button class="decrypt-btn" id="decrypt-btn" onclick="startDecrypt()">🔓 Nachricht entschlüsseln</button>
+
+    <div class="video-wrap" id="video-wrap">
+      <div class="rec-dot">
+        <div class="rec-circle"></div>
+        REC
+      </div>
+      <div class="video-embed">
+        <iframe id="evidence-video"
+          src=""
+          data-src="https://www.youtube-nocookie.com/embed/WN0q47hZCW0"
+          title="Geheime Botschaft"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+      </div>
+    </div>
+
+    <div class="bottom-hint" id="bottom-hint">
+      ▶ Schau das Video zu Ende…
+    </div>
+
+    <a class="back-btn" id="back-btn" href="ratsel5_final.html">
+      🏠 Zurück zur Wohnung — schnell!!
+    </a>
+
+  </div>
+
+</div>
+
+<script>
+  // ── Static noise dots ─────────────────────────────────
+  for (let i = 0; i < 30; i++) {
+    const d = document.createElement('div');
+    d.className = 'static-dot';
+    const sz = 1 + Math.random() * 3;
+    d.style.cssText = `
+      width:${sz}px; height:${sz}px;
+      left:${Math.random()*100}%;
+      top:${Math.random()*100}%;
+      animation-duration:${0.08 + Math.random()*0.25}s;
+      animation-delay:${Math.random()*0.5}s;
+    `;
+    document.body.appendChild(d);
+  }
+
+  // ── Show button after video ends ──────────────────────
+  // Note: evidence-video is now a YouTube iframe; 'ended' event doesn't fire cross-origin.
+  // The back-btn is instead shown via a manual reveal button below the video (see bottom-hint).
+  const btn     = document.getElementById('back-btn');
+  const hint    = document.getElementById('bottom-hint');
+
+  // ── Decrypt effect ───────────────────────────────────
+  const finalText = [
+    { text: "Romi, es wird Zeit, dass du die Wahrheit erfährst.\n\n", highlight: false },
+    { text: "Ich bin kein gewöhnlicher Geburtstagsfrosch. Mein Name ist Froschinspektor Quak — seit Jahren bin ich Kröticole auf der Spur. Doch sie blieb mir immer einen Schritt voraus.\n\n", highlight: false },
+    { text: "Heute jedoch habe ich alles beobachtet. Schau dir das an, Romi.\n\n", highlight: false },
+    { text: "Nur du kannst sie jetzt noch aufhalten.", highlight: true }
+  ];
+
+  const fullPlain = finalText.map(s => s.text).join('');
+  const glitchChars = '!@#$%^&*<>?/|{}[]~±§€₿Ω∆∑π√∞≠≈ψξΘΛΞΠΣΦΨ';
+  const decryptEl = document.getElementById('decrypt-text');
+  const decryptBtn = document.getElementById('decrypt-btn');
+
+  const quakNameEl = document.getElementById('quak-name');
+  const quakNamePlain = 'Froschinspektor Quak';
+
+  // Show static scrambled text on load
+  function scramble(text) {
+    return text.split('').map(c => {
+      if (c === ' ' || c === '\n') return c;
+      return glitchChars[Math.floor(Math.random() * glitchChars.length)];
+    }).join('');
+  }
+  decryptEl.textContent = scramble(fullPlain);
+  quakNameEl.textContent = scramble(quakNamePlain);
+
+  let scrambleInterval = null; // no auto-refresh
+
+  let decryptStarted = false;
+
+  function startDecrypt() {
+    if (decryptStarted) return;
+    decryptStarted = true;
+    clearInterval(scrambleInterval);
+    decryptBtn.disabled = true;
+    decryptBtn.textContent = '⏳ Entschlüsselung läuft…';
+
+    // Decrypt the name quickly (over ~600ms)
+    let nameRevealed = 0;
+    const nameInterval = setInterval(() => {
+      nameRevealed += 2;
+      if (nameRevealed >= quakNamePlain.length) {
+        quakNameEl.textContent = quakNamePlain;
+        clearInterval(nameInterval);
+      } else {
+        quakNameEl.textContent = quakNamePlain.slice(0, nameRevealed) + scramble(quakNamePlain.slice(nameRevealed));
+      }
+    }, 40);
+
+    let revealed = 0;
+    const totalChars = fullPlain.length;
+
+    function buildHTML(revealedCount) {
+      let html = '';
+      let charIdx = 0;
+      for (const seg of finalText) {
+        const segEnd = charIdx + seg.text.length;
+        const revCount = Math.max(0, Math.min(revealedCount, segEnd) - charIdx);
+        const revealedPart = seg.text.slice(0, revCount);
+        const hiddenPart = revCount < seg.text.length
+          ? scramble(seg.text.slice(revCount)).replace(/\n/g, '')
+          : '';
+        const fullPart = revealedPart.replace(/\n/g, '<br>') + hiddenPart;
+        html += seg.highlight
+          ? `<span class="msg-highlight">${fullPart}</span>`
+          : fullPart;
+        charIdx = segEnd;
+      }
+      return html;
+    }
+
+    const interval = setInterval(() => {
+      revealed += 3;
+      if (revealed >= totalChars) {
+        revealed = totalChars;
+        let html = '';
+        for (const seg of finalText) {
+          const t = seg.text.replace(/\n/g, '<br>');
+          html += seg.highlight ? `<span class="msg-highlight">${t}</span>` : t;
+        }
+        decryptEl.innerHTML = html;
+        decryptBtn.style.display = 'none';
+        clearInterval(interval);
+
+        // Reveal + load video
+        const videoWrap = document.getElementById('video-wrap');
+        const iframe = document.getElementById('evidence-video');
+        iframe.src = iframe.getAttribute('data-src');
+        videoWrap.classList.add('visible');
+        videoWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        setTimeout(() => {
+          hint.innerHTML = '✅ Jetzt weißt du, was zu tun ist!';
+          hint.style.color = 'rgba(127,255,58,.8)';
+          btn.classList.add('visible');
+          btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, VIDEO_DURATION_MS);
+      } else {
+        decryptEl.innerHTML = buildHTML(revealed);
+      }
+    }, 40);
+  }
+
+  // Since YouTube iframes can't reliably signal "ended" without the YT API,
+  // show the continue button a fixed delay after the video is revealed.
+  // Adjust VIDEO_DURATION_MS to match your video's length.
+  const VIDEO_DURATION_MS = 45000; // 45s — change to match your video length
+</script>
+</body>
+</html>
