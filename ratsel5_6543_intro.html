@@ -103,6 +103,42 @@
     50%{box-shadow:0 0 28px rgba(204,34,34,.7)}
   }
 
+  .secret-label {
+    text-align: center;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1rem;
+    letter-spacing: .16em;
+    color: var(--red);
+    text-transform: uppercase;
+    margin-bottom: .3rem;
+    text-shadow: 0 0 10px rgba(204,34,34,.5);
+  }
+
+  .frog-imagebox {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1/1;
+    max-height: 260px;
+    margin: 0 auto 1rem;
+    background: #000;
+    border: 2px solid var(--green-mid);
+    border-radius: 1.2rem;
+    box-shadow: 0 0 20px rgba(99,153,34,.3);
+    overflow: hidden;
+  }
+  .frog-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    padding: 1rem;
+    transition: opacity 2.2s ease;
+  }
+  .frog-birthday { opacity: 1; }
+  .frog-detective { opacity: 0; }
+  .frog-imagebox.revealed .frog-birthday { opacity: 0; }
+  .frog-imagebox.revealed .frog-detective { opacity: 1; }
+
   /* ── CARD ── */
   .card {
     background: rgba(17,26,17,0.92);
@@ -188,8 +224,8 @@
     line-height: 1.65;
     margin-bottom: 1rem;
     position: relative;
-    min-height: 296px;
-    height: 296px;
+    min-height: 320px;
+    height: 320px;
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -234,78 +270,8 @@
     width: 100%;
   }
 
-  /* ── VIDEO ── */
-  .video-wrap {
-    position: relative;
-    width: 100%;
-    border-radius: 1.2rem;
-    overflow: hidden;
-    border: 2px solid var(--green-mid);
-    box-shadow: 0 0 20px rgba(99,153,34,.3);
-    background: #000;
-    margin-bottom: 1rem;
-    max-height: 0;
-    opacity: 0;
-    pointer-events: none;
-    transition: max-height .6s ease, opacity .5s ease, margin-bottom .6s ease;
-  }
-  .video-wrap.visible {
-    max-height: 500px;
-    opacity: 1;
-    pointer-events: auto;
-    margin-bottom: 1rem;
-  }
-  .video-embed {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 16/9;
-  }
-  .video-embed iframe {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    display: block;
-  }
-  /* Recording indicator */
-  .rec-dot {
-    position: absolute;
-    top: .6rem;
-    left: .8rem;
-    display: flex;
-    align-items: center;
-    gap: .4rem;
-    background: rgba(0,0,0,.6);
-    border-radius: 2rem;
-    padding: .2rem .6rem;
-    font-size: .68rem;
-    font-weight: 800;
-    letter-spacing: .08em;
-    color: var(--white);
-    z-index: 3;
-  }
-  .rec-circle {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: var(--red);
-    animation: recBlink .9s ease-in-out infinite alternate;
-  }
-  @keyframes recBlink { from{opacity:1} to{opacity:.2} }
-
-  /* ── BOTTOM HINT ── */
-  .bottom-hint {
-    font-size: .82rem;
-    font-weight: 700;
-    color: rgba(255,255,255,.45);
-    text-align: center;
-    letter-spacing: .04em;
-  }
-  .bottom-hint span {
-    color: var(--orange);
-  }
-
-  /* ── BACK BTN (hidden until video ends) ── */
-  .back-btn {
+  /* ── WATCH BUTTON (appears after decrypt, opens video fullscreen) ── */
+  .watch-btn {
     display: none;
     width: 100%;
     padding: .85rem 1.8rem;
@@ -318,19 +284,48 @@
     transition: transform .12s, box-shadow .12s;
     background: var(--orange);
     color: var(--white);
-    text-decoration: none;
     text-align: center;
     animation: btnPop .5s cubic-bezier(.175,.885,.32,1.275);
-    margin-top: .4rem;
   }
-  .back-btn.visible { display: block; }
-  .back-btn:active {
+  .watch-btn.visible { display: block; }
+  .watch-btn:active {
     transform: translate(3px,3px);
     box-shadow: 1px 1px 0 var(--orange-dark);
   }
   @keyframes btnPop {
     from{opacity:0;transform:scale(.8) translateY(10px)}
     to{opacity:1;transform:scale(1) translateY(0)}
+  }
+
+  /* ── FULLSCREEN VIDEO OVERLAY ── */
+  .video-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 300;
+    align-items: center;
+    justify-content: center;
+  }
+  .video-overlay.active { display: flex; }
+  .video-overlay iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+  .video-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,.5);
+    background: rgba(0,0,0,.5);
+    color: #fff;
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 301;
   }
 </style>
 </head>
@@ -344,47 +339,118 @@
 
   <div class="card">
 
+    <div class="secret-label">STRENG GEHEIM</div>
     <div class="card-header">
-      <div class="kroticole-img">
-        <img src="quak.jpg" alt="Froschinspektor Quak" onerror="this.style.display='none'; this.parentElement.textContent='🕵️'">
-      </div>
       <div class="header-text">
         <div class="header-from">🔐 Verschlüsselte Nachricht von <span id="quak-name">Froschinspektor Quak</span></div>
       </div>
     </div>
 
+    <!-- Image box: birthday frog -> detective frog crossfade -->
+    <div class="frog-imagebox" id="frog-imagebox">
+      <svg class="frog-svg frog-birthday" id="frog-birthday" viewBox="0 0 200 210" xmlns="http://www.w3.org/2000/svg">
+        <!-- cattails/reeds background hint -->
+        <ellipse cx="100" cy="205" rx="90" ry="14" fill="#1a3a0a" opacity=".5"/>
+        <!-- party hat BEHIND head/eyes -->
+        <path d="M100 8 L128 66 L72 66 Z" fill="#c77dff" stroke="#7a3fa0" stroke-width="2"/>
+        <path d="M100 8 L112 66 L88 66 Z" fill="#e0a8ff" opacity=".6"/>
+        <circle cx="100" cy="8" r="7" fill="#ffd166" stroke="#c99a2e" stroke-width="1.5"/>
+        <!-- body (small, mostly cropped) -->
+        <ellipse cx="100" cy="168" rx="46" ry="34" fill="#4a9e2a" stroke="#2d6a10" stroke-width="2.5"/>
+        <!-- head -->
+        <ellipse cx="100" cy="100" rx="58" ry="52" fill="#4a9e2a" stroke="#2d6a10" stroke-width="2.5"/>
+        <ellipse cx="78" cy="78" rx="20" ry="13" fill="#5ab830" opacity=".3"/>
+        <!-- eye bumps (drawn AFTER hat so they sit in front) -->
+        <ellipse cx="66" cy="62" rx="24" ry="22" fill="#4a9e2a" stroke="#2d6a10" stroke-width="2.5"/>
+        <ellipse cx="134" cy="62" rx="24" ry="22" fill="#4a9e2a" stroke="#2d6a10" stroke-width="2.5"/>
+        <ellipse cx="66" cy="61" rx="15.5" ry="14.5" fill="#fff"/>
+        <ellipse cx="134" cy="61" rx="15.5" ry="14.5" fill="#fff"/>
+        <circle cx="68" cy="63" r="8.5" fill="#5a3a18"/>
+        <circle cx="136" cy="63" r="8.5" fill="#5a3a18"/>
+        <circle cx="64" cy="58" r="3" fill="#fff"/>
+        <circle cx="132" cy="58" r="3" fill="#fff"/>
+        <!-- smile -->
+        <path d="M74 118 Q100 134 126 118" fill="none" stroke="#1a5008" stroke-width="3" stroke-linecap="round"/>
+        <!-- cheeks -->
+        <circle cx="56" cy="104" r="7.5" fill="#EF9F27" opacity=".35"/>
+        <circle cx="144" cy="104" r="7.5" fill="#EF9F27" opacity=".35"/>
+      </svg>
+
+      <svg class="frog-svg frog-detective" id="frog-detective" viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="100" cy="205" rx="90" ry="14" fill="#1a3a0a" opacity=".5"/>
+        <!-- trench coat body -->
+        <path d="M62 158 Q60 198 66 202 L134 202 Q140 198 138 158 Z" fill="#8a7458" stroke="#5c4a34" stroke-width="2.5"/>
+        <path d="M100 158 L100 202" stroke="#5c4a34" stroke-width="1.5"/>
+        <circle cx="92" cy="172" r="2.5" fill="#5c4a34"/>
+        <circle cx="92" cy="184" r="2.5" fill="#5c4a34"/>
+        <path d="M62 158 Q50 172 48 190" fill="none" stroke="#5c4a34" stroke-width="2"/>
+        <path d="M138 158 Q150 172 152 190" fill="none" stroke="#5c4a34" stroke-width="2"/>
+        <!-- coat collar -->
+        <path d="M78 156 L100 174 L122 156 L118 150 L100 162 L82 150 Z" fill="#6e5a40" stroke="#5c4a34" stroke-width="1.5"/>
+        <!-- arms -->
+        <ellipse cx="52" cy="158" rx="13" ry="17" fill="#4a9e2a" stroke="#2d6a10" stroke-width="2"/>
+        <ellipse cx="148" cy="158" rx="13" ry="17" fill="#4a9e2a" stroke="#2d6a10" stroke-width="2"/>
+        <!-- magnifying glass, mirrored: handle near hand, lens held outward -->
+        <line x1="147" y1="150" x2="164" y2="126" stroke="#5c3a1a" stroke-width="5" stroke-linecap="round"/>
+        <circle cx="171" cy="114" r="14" fill="rgba(200,230,255,.4)" stroke="#3a2a1a" stroke-width="3.5"/>
+        <circle cx="167" cy="109" r="4" fill="#fff" opacity=".6"/>
+        <!-- classic detective fedora, BEHIND head/eyes -->
+        <!-- brim (wide flat oval) -->
+        <ellipse cx="100" cy="52" rx="64" ry="11" fill="#4a3520" stroke="#4a2f14" stroke-width="2.5"/>
+        <ellipse cx="100" cy="50" rx="58" ry="8" fill="#5c4228" stroke="#4a2f14" stroke-width="1.5"/>
+        <!-- crown (rounded block sitting on brim) -->
+        <path d="M72 44 Q70 6 100 2 Q130 6 128 44 L124 44 Q126 12 100 8 Q74 12 76 44 Z"
+              fill="#5c4228" stroke="#4a2f14" stroke-width="2.5"/>
+        <path d="M76 44 L124 44 L128 44 Q130 48 128 52 L72 52 Q70 48 72 44 Z"
+              fill="#4a3520" stroke="#4a2f14" stroke-width="2.5"/>
+        <!-- pinch dent on top -->
+        <path d="M92 6 Q100 12 108 6" fill="none" stroke="#4a2f14" stroke-width="1.8" opacity=".6"/>
+        <!-- hat band -->
+        <rect x="70" y="35" width="60" height="11" rx="2" fill="#8b1a1a" stroke="#5c0f0f" stroke-width="1.5"/>
+        <!-- head -->
+        <ellipse cx="100" cy="100" rx="58" ry="52" fill="#4a9e2a" stroke="#2d6a10" stroke-width="2.5"/>
+        <ellipse cx="78" cy="78" rx="20" ry="13" fill="#5ab830" opacity=".3"/>
+        <!-- eye bumps (drawn AFTER hat so eyes stay visible) -->
+        <ellipse cx="66" cy="62" rx="24" ry="22" fill="#4a9e2a" stroke="#2d6a10" stroke-width="2.5"/>
+        <ellipse cx="134" cy="62" rx="24" ry="22" fill="#4a9e2a" stroke="#2d6a10" stroke-width="2.5"/>
+        <ellipse cx="66" cy="61" rx="15.5" ry="14.5" fill="#fff"/>
+        <ellipse cx="134" cy="61" rx="15.5" ry="14.5" fill="#fff"/>
+        <circle cx="68" cy="63" r="8.5" fill="#5a3a18"/>
+        <circle cx="136" cy="63" r="8.5" fill="#5a3a18"/>
+        <circle cx="64" cy="58" r="3" fill="#fff"/>
+        <circle cx="132" cy="58" r="3" fill="#fff"/>
+        <!-- serious brows -->
+        <path d="M48 46 Q66 38 84 44" fill="none" stroke="#1a5008" stroke-width="3.5" stroke-linecap="round"/>
+        <path d="M116 44 Q134 38 152 46" fill="none" stroke="#1a5008" stroke-width="3.5" stroke-linecap="round"/>
+        <!-- determined mouth -->
+        <path d="M76 118 Q100 128 124 118" fill="none" stroke="#1a5008" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+    </div>
+
     <div class="message-box" id="message-box">
       <span class="decrypt-text" id="decrypt-text"></span>
     </div>
-    <button class="decrypt-btn" id="decrypt-btn" onclick="startDecrypt()">🔓 Nachricht entschlüsseln</button>
+    <button class="decrypt-btn" id="decrypt-btn" onclick="startDecrypt()">📨 Nachricht öffnen</button>
 
-    <div class="video-wrap" id="video-wrap">
-      <div class="rec-dot">
-        <div class="rec-circle"></div>
-        REC
-      </div>
-      <div class="video-embed">
-        <iframe id="evidence-video"
-          src=""
-          data-src="https://www.youtube-nocookie.com/embed/WN0q47hZCW0"
-          title="Geheime Botschaft"
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen>
-        </iframe>
-      </div>
-    </div>
-
-    <div class="bottom-hint" id="bottom-hint">
-      ▶ Schau das Video zu Ende…
-    </div>
-
-    <a class="back-btn" id="back-btn" href="ratsel5_final.html">
-      🏠 Zurück zur Wohnung — schnell!!
-    </a>
+    <button class="watch-btn" id="watch-btn" onclick="startVideo()">
+      ▶ Starten
+    </button>
 
   </div>
 
+</div>
+
+<!-- Fullscreen video overlay -->
+<div class="video-overlay" id="video-overlay">
+  <button class="video-close" onclick="closeVideo()">✕</button>
+  <iframe id="evidence-video"
+    src=""
+    data-src="https://www.youtube-nocookie.com/embed/WN0q47hZCW0?autoplay=1"
+    title="Geheime Botschaft"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+    allowfullscreen>
+  </iframe>
 </div>
 
 <script>
@@ -405,16 +471,14 @@
 
   // ── Show button after video ends ──────────────────────
   // Note: evidence-video is now a YouTube iframe; 'ended' event doesn't fire cross-origin.
-  // The back-btn is instead shown via a manual reveal button below the video (see bottom-hint).
-  const btn     = document.getElementById('back-btn');
-  const hint    = document.getElementById('bottom-hint');
+  const watchBtn = document.getElementById('watch-btn');
 
   // ── Decrypt effect ───────────────────────────────────
   const finalText = [
     { text: "Romi, es wird Zeit, dass du die Wahrheit erfährst.\n\n", highlight: false },
-    { text: "Ich bin kein gewöhnlicher Geburtstagsfrosch. Mein Name ist Froschinspektor Quak — seit Jahren bin ich Kröticole auf der Spur. Doch sie blieb mir immer einen Schritt voraus.\n\n", highlight: false },
-    { text: "Heute jedoch habe ich alles beobachtet. Schau dir das an, Romi.\n\n", highlight: false },
-    { text: "Nur du kannst sie jetzt noch aufhalten.", highlight: true }
+    { text: "Ich bin kein gewöhnlicher Geburtstagsfrosch. Mein Name ist Froschinspektor Quak — seit Jahren bin ich Kröticole, der gefürchteten Geschenkefresserin, auf der Spur. Doch sie blieb mir immer einen Sprung voraus.\n\n", highlight: false },
+    { text: "Heute jedoch konnte meine Crew und ich alles beobachten. Schau dir das an, Romi.\n\n", highlight: false },
+    { text: "Nur du kannst sie jetzt noch aufhalten, bevor sie dein Geschenk verschlingt!", highlight: true }
   ];
 
   const fullPlain = finalText.map(s => s.text).join('');
@@ -439,12 +503,29 @@
 
   let decryptStarted = false;
 
+  function startVideo() {
+    const overlay = document.getElementById('video-overlay');
+    const iframe  = document.getElementById('evidence-video');
+    iframe.src = iframe.getAttribute('data-src');
+    overlay.classList.add('active');
+  }
+
+  function closeVideo() {
+    const overlay = document.getElementById('video-overlay');
+    const iframe  = document.getElementById('evidence-video');
+    overlay.classList.remove('active');
+    iframe.src = '';
+  }
+
   function startDecrypt() {
     if (decryptStarted) return;
     decryptStarted = true;
     clearInterval(scrambleInterval);
     decryptBtn.disabled = true;
     decryptBtn.textContent = '⏳ Entschlüsselung läuft…';
+
+    // Crossfade the frog image: birthday frog -> detective frog
+    document.getElementById('frog-imagebox').classList.add('revealed');
 
     // Decrypt the name quickly (over ~600ms)
     let nameRevealed = 0;
@@ -493,29 +574,16 @@
         decryptBtn.style.display = 'none';
         clearInterval(interval);
 
-        // Reveal + load video
-        const videoWrap = document.getElementById('video-wrap');
-        const iframe = document.getElementById('evidence-video');
-        iframe.src = iframe.getAttribute('data-src');
-        videoWrap.classList.add('visible');
-        videoWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-        setTimeout(() => {
-          hint.innerHTML = '✅ Jetzt weißt du, was zu tun ist!';
-          hint.style.color = 'rgba(127,255,58,.8)';
-          btn.classList.add('visible');
-          btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, VIDEO_DURATION_MS);
+        // Show the "Starten" button
+        watchBtn.classList.add('visible');
+        watchBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else {
         decryptEl.innerHTML = buildHTML(revealed);
       }
     }, 40);
   }
 
-  // Since YouTube iframes can't reliably signal "ended" without the YT API,
-  // show the continue button a fixed delay after the video is revealed.
-  // Adjust VIDEO_DURATION_MS to match your video's length.
-  const VIDEO_DURATION_MS = 45000; // 45s — change to match your video length
+
 </script>
 </body>
 </html>
