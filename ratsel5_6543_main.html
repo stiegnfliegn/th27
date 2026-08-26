@@ -460,6 +460,10 @@
   function startDecrypt() {
     if (decryptStarted) return;
     decryptStarted = true;
+
+    // Nach oben scrollen, bevor sich die Box-Größe ändert
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
     clearInterval(scrambleInterval);
     decryptBtn.disabled = true;
     decryptBtn.textContent = '⏳ Entschlüsselung läuft…';
