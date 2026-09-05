@@ -827,6 +827,8 @@ function runShow(){
   });
   at(29091,()=>{
     appear();
+    // Swap photo: krot02 -> krot03 for the start of the first chorus
+    document.getElementById('krotHeadImg').src = 'img/krot03.jpeg';
     walk('march',.3);
     krot.style.animation='krotBob .3s ease-in-out infinite alternate';
     moveTo('calc(100% + 22px)',5.5,'linear');
