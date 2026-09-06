@@ -197,9 +197,8 @@
   .scene.open .door-right { transform: perspective(500px) rotateY(75deg); }
 
   /* Tap hint */
-  .tap-hint {
+    .tap-hint {
     position: absolute;
-    bottom: -2.5rem;
     left: 50%;
     transform: translateX(-50%);
     color: rgba(255,255,255,.45);
@@ -208,6 +207,9 @@
     white-space: nowrap;
     animation: pulse 2s ease-in-out infinite;
   }
+  .tap-hint.line1 { bottom: -2.5rem; }
+  .tap-hint.line2 { bottom: -4.4rem; }
+ 
   @keyframes pulse {
     0%,100% { opacity: .45; }
     50%      { opacity: .9; }
@@ -286,8 +288,8 @@
     <div class="shroom-stem" style="width:6px; height:8px"></div>
   </div>
 
-  <div class="tap-hint">🐸 Tippe auf die Tür …</div>
-  <div class="tap-hint">(Ton an!)</div>
+  <div class="tap-hint line1">🐸 Tippe auf die Tür …</div>
+  <div class="tap-hint line2">(Ton an!)</div>
 </div>
 
 <script>
